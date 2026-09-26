@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panorama Matinal</title>
+<meta name="description" content="Panorama econômico diário: bolsas, commodities, juros, notícias e calendário, com cotações ao vivo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#15201d; --muted:#5b6a66; --line:#d8dfdc;
+  --accent:#0f6b5c; --accent-soft:#e1efeb;
+  --up:#13804f; --down:#c23b3b; --flat:#6b7773;
+  --up-bg:#e3f3ea; --down-bg:#fbe7e6;
+  --hi:#b5561a; --hi-bg:#fcecdf;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e1514; --surface:#162120; --ink:#e6eeeb; --muted:#93a39e; --line:#273532;
+    --accent:#5fc7b2; --accent-soft:#1b3531;
+    --up:#4cc98a; --down:#f07a73; --flat:#8a9894;
+    --up-bg:#15352a; --down-bg:#3a1d1c;
+    --hi:#f0a066; --hi-bg:#3a2717;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e1514; --surface:#162120; --ink:#e6eeeb; --muted:#93a39e; --line:#273532;
+  --accent:#5fc7b2; --accent-soft:#1b3531;
+  --up:#4cc98a; --down:#f07a73; --flat:#8a9894;
+  --up-bg:#15352a; --down-bg:#3a1d1c;
+  --hi:#f0a066; --hi-bg:#3a2717;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding:0 16px}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 60px;display:flex;flex-direction:column;gap:36px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,46px);font-weight:700;line-height:1.05}
+h2{font-size:22px;font-weight:700}
+h3{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--body)}
+p{margin:0}
+a{color:var(--accent)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--flat)}
+
+/* header */
+header.top{display:grid;grid-template-columns:1fr auto;gap:18px 32px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:18px}
+.edition{font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stamp{text-align:right;font-size:13px;color:var(--muted)}
+.stamp b{color:var(--ink);font-weight:600}
+@media (max-width:700px){header.top{grid-template-columns:1fr}.stamp{text-align:left}}
+
+/* ticker strip */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tk{background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.tk .l{font-size:12px;color:var(--muted);font-weight:500}
+.tk .v{font-family:var(--mono);font-size:17px;font-weight:500}
+.tk .c{font-family:var(--mono);font-size:13px}
+
+.lead{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.lead div{background:var(--accent-soft);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.lead b{font-family:var(--display);font-size:17px;font-weight:700}
+.lead p{font-size:14px;color:var(--ink)}
+@media (max-width:820px){.lead{grid-template-columns:1fr}}
+
+section{display:flex;flex-direction:column;gap:16px}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec-head .note{font-size:13px;color:var(--muted)}
+
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media (max-width:1000px){.grid4{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.grid4,.grid3,.grid2{grid-template-columns:1fr}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 0;border-bottom:1px solid var(--line);text-align:right;vertical-align:baseline}
+tr:last-child td{border-bottom:0}
+td:first-child,th:first-child{text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
+.pill{display:inline-block;font-family:var(--mono);font-size:12.5px;padding:2px 7px;border-radius:5px;min-width:64px;text-align:right}
+.pill.up{background:var(--up-bg)} .pill.down{background:var(--down-bg)} .pill.flat{background:var(--line);color:var(--muted)}
+.closed{font-size:12px;color:var(--muted);font-style:italic}
+.foot{font-size:12px;color:var(--muted)}
+
+/* treemap */
+.map-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:900px){.map-wrap{grid-template-columns:1fr}}
+#treemap{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;border-radius:8px;overflow:hidden;background:#1b1e24}
+@media (max-width:620px){#treemap{aspect-ratio:3/4}}
+.sector{position:absolute;border:2px solid #1b1e24;overflow:hidden}
+.sector .sl{position:absolute;left:0;top:0;right:0;height:16px;padding:0 5px;font:600 11px/16px var(--body);color:#e8ebef;background:#1b1e24;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;letter-spacing:.05em}
+.secbars{display:flex;flex-direction:column;gap:9px}
+.sb{display:grid;grid-template-columns:minmax(150px,auto) 1fr 62px;gap:10px;align-items:center;font-size:13px}
+.sb .nm{display:flex;flex-direction:column;line-height:1.2}
+.sb .nm small{white-space:nowrap;font-size:11px;color:var(--muted);font-family:var(--mono)}
+.sb .axis{position:relative;height:10px;background:var(--line);border-radius:5px}
+.sb .axis::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted)}
+.sb .axis i{position:absolute;top:0;bottom:0;border-radius:5px}
+.sb .v{font-family:var(--mono);text-align:right}
+.tile{position:absolute;border:1px solid rgba(0,0,0,.45);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#fff;padding:1px;overflow:hidden;font-family:var(--body);cursor:default}
+.tile .n{font-weight:600;font-size:clamp(10px,1.4vw,15px);line-height:1.1}
+.tile .p{font-family:var(--mono);font-size:clamp(10px,1.3vw,14px)}
+.legend{display:flex;gap:2px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);flex-wrap:wrap}
+.legend span.sw{width:34px;height:14px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px}
+.breadth{display:flex;flex-direction:column;gap:12px}
+.bar{display:flex;flex-direction:column;gap:4px}
+.bar .lbl{display:flex;justify-content:space-between;font-size:12.5px}
+.bar .track{height:9px;border-radius:5px;background:var(--down-bg);overflow:hidden;display:flex}
+.bar .track i{display:block;height:100%;background:var(--up)}
+.movers{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+@media (max-width:620px){.movers{grid-template-columns:repeat(2,1fr)}}
+.mv{border-radius:6px;padding:8px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px}
+.mv.up{background:var(--up-bg)} .mv.down{background:var(--down-bg)}
+.mv b{font-weight:500;color:var(--ink)}
+
+/* news */
+.news{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);padding-top:3px}
+.item h4{margin:0 0 4px;font-family:var(--display);font-size:17px;font-weight:700;line-height:1.25;text-wrap:balance}
+.item p{font-size:14px;color:var(--muted);max-width:75ch}
+.impact{display:inline-block;margin-top:6px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:5px;background:var(--hi-bg);color:var(--hi)}
+@media (max-width:620px){.item{grid-template-columns:1fr;gap:4px}}
+
+/* calendar */
+.cal{overflow-x:auto}
+.cal table{min-width:640px}
+.cal td{padding:10px 8px;text-align:left;vertical-align:top}
+.cal th{padding:8px;text-align:left}
+.cal tr.key td{background:var(--hi-bg)}
+.cal tr.key td:first-child{box-shadow:inset 3px 0 0 var(--hi)}
+.stars{color:var(--hi);letter-spacing:1px;font-size:13px;white-space:nowrap}
+.stars .off{color:var(--line)}
+.flag{font-family:var(--mono);font-size:12px;font-weight:500;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:4px}
+.week{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:900px){.week{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.week{grid-template-columns:1fr}}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.day h5{margin:0;font-family:var(--display);font-size:15px}
+.day ul{margin:0;padding-left:16px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.day li.k{font-weight:600}
+
+.sources{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px}
+.sources a{color:var(--muted)}
+.laatus-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.play{display:inline-flex;align-items:center;gap:10px;font:600 15px var(--body);color:#fff;background:var(--accent);border:0;border-radius:999px;padding:10px 18px 10px 12px;cursor:pointer}
+.play .tri{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.22);position:relative;flex:none}
+.play .tri::after{content:"";position:absolute;left:10px;top:7px;border-style:solid;border-width:6px 0 6px 10px;border-color:transparent transparent transparent #fff}
+.play:hover{filter:brightness(1.08)}
+.play[disabled]{opacity:.55;cursor:default}
+#laatus-resumo{display:flex;flex-direction:column;gap:10px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.tv{width:100%;max-width:100%;overflow:hidden}
+.tv .tradingview-widget-container,.tv .tradingview-widget-container__widget{height:100%;width:100%}
+.live{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--down)}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--down);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.live::before{animation:none}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:900px){.two{grid-template-columns:1fr}}
+.credit{font-size:11.5px;color:var(--muted)}
+.credit a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <div class="edition">Panorama Matinal · segunda-feira, 28 set 2026</div>
+    <h1>Petróleo cede, Treasuries seguem no topo desde 2007</h1>
+  </div>
+  <div class="stamp">Fechamentos de <b>sexta, 25/09</b><br>Horários em Brasília (BRT)<br><span id="updated">Atualizado: sáb 26/09, 01:00</span></div>
+</header>
+
+
+<div class="tv" style="height:46px"><div class="tradingview-widget-container" data-kind="ticker-tape" data-cfg='{"symbols": [{"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"}, {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"}, {"proName": "FOREXCOM:DJI", "title": "Dow"}, {"proName": "BMFBOVESPA:IBOV", "title": "Ibovespa"}, {"proName": "FX_IDC:USDBRL", "title": "Dólar/Real"}, {"proName": "TVC:DXY", "title": "DXY"}, {"proName": "TVC:UKOIL", "title": "Brent"}, {"proName": "TVC:USOIL", "title": "WTI"}, {"proName": "TVC:GOLD", "title": "Ouro"}, {"proName": "TVC:US10Y", "title": "Treasury 10a"}, {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"}], "showSymbolLogo": true, "isTransparent": true, "displayMode": "adaptive", "locale": "br"}'><div class="tradingview-widget-container__widget"></div></div></div>
+
+<!-- EDITORIAL:DESTAQUES -->
+<div class="lead">
+  <div><b>Ormuz no centro</b><p>O Irã propôs reabrir o estreito em sete dias, com condições. Brent e WTI caíram mais de 2% e aliviaram os juros globais.</p></div>
+  <div><b>Juros altos por mais tempo</b><p>O Treasury de 10 anos ficou em 5,17%, perto da máxima desde 2007. O mercado vê cerca de 70% de chance de nova alta do Fed em outubro.</p></div>
+  <div><b>Brasil descolado</b><p>IPCA-15 de setembro veio em 0,70%, acima do teto das projeções. Ibovespa caiu pela 3ª sessão; curva de DI fechou em baixa.</p></div>
+</div>
+
+
+<!-- /EDITORIAL:DESTAQUES -->
+
+<section id="bolsas">
+  <div class="sec-head"><h2>Bolsas</h2><span class="live">ao vivo</span></div>
+  <div class="panel"><div class="tv" style="height:520px"><div class="tradingview-widget-container" data-kind="market-overview" data-cfg='{"tabs": [{"title": "Américas", "symbols": [{"s": "FOREXCOM:SPXUSD", "d": "S&P 500"}, {"s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100"}, {"s": "FOREXCOM:DJI", "d": "Dow Jones"}, {"s": "BMFBOVESPA:IBOV", "d": "Ibovespa"}, {"s": "TSX:TSX", "d": "S&P/TSX"}, {"s": "BMV:ME", "d": "México IPC"}]}, {"title": "Europa", "symbols": [{"s": "XETR:DAX", "d": "DAX"}, {"s": "TVC:UKX", "d": "FTSE 100"}, {"s": "EURONEXT:PX1", "d": "CAC 40"}, {"s": "TVC:SX5E", "d": "Euro Stoxx 50"}, {"s": "TVC:SXXP", "d": "STOXX 600"}, {"s": "TVC:IBEX35", "d": "IBEX 35"}]}, {"title": "Ásia", "symbols": [{"s": "TVC:NI225", "d": "Nikkei 225"}, {"s": "TVC:HSI", "d": "Hang Seng"}, {"s": "SSE:000001", "d": "Shanghai"}, {"s": "TVC:KOSPI", "d": "Kospi"}, {"s": "ASX:XJO", "d": "ASX 200"}]}, {"title": "Emergentes", "symbols": [{"s": "BMFBOVESPA:IBOV", "d": "Ibovespa"}, {"s": "BSE:SENSEX", "d": "Sensex"}, {"s": "NSE:NIFTY", "d": "Nifty 50"}, {"s": "BMV:ME", "d": "México IPC"}, {"s": "TVC:HSI", "d": "Hang Seng"}]}], "width": "100%", "height": "100%", "showChart": true, "showSymbolLogo": true, "isTransparent": true, "locale": "br", "plotLineColorGrowing": "#13804f", "plotLineColorFalling": "#c23b3b", "belowLineFillColorGrowing": "rgba(19,128,79,0.12)", "belowLineFillColorFalling": "rgba(194,59,59,0.12)", "symbolActiveColor": "rgba(15,107,92,0.12)"}'><div class="tradingview-widget-container__widget"></div></div></div></div>
+</section>
+
+<section id="sp">
+  <div class="sec-head"><h2>Mapa do S&amp;P 500</h2><span class="live">ao vivo</span></div>
+  <div class="panel"><div class="tv" style="height:620px"><div class="tradingview-widget-container" data-kind="stock-heatmap" data-cfg='{"exchanges": [], "dataSource": "SPX500", "grouping": "sector", "blockSize": "market_cap_basic", "blockColor": "change", "locale": "br", "symbolUrl": "", "hasTopBar": true, "isDataSetEnabled": false, "isZoomEnabled": true, "hasSymbolTooltip": true, "isMonoSize": false, "width": "100%", "height": "100%"}'><div class="tradingview-widget-container__widget"></div></div></div></div>
+  <!-- EDITORIAL:AMPLITUDE -->
+  <div class="two">
+    <div class="panel breadth">
+      <h3>Amplitude do mercado</h3>
+      <div class="bar"><div class="lbl"><span>Em alta 49,2% (2.762)</span><span>Em queda 45,3% (2.540)</span></div><div class="track"><i style="width:52%"></i></div></div>
+      <div class="bar"><div class="lbl"><span>Novas máximas 67</span><span>Novas mínimas 285</span></div><div class="track"><i style="width:19%"></i></div></div>
+      <div class="bar"><div class="lbl"><span>Acima da MM50: 31,9%</span><span>Abaixo: 68,1%</span></div><div class="track"><i style="width:31.9%"></i></div></div>
+      <div class="bar"><div class="lbl"><span>Acima da MM200: 42,0%</span><span>Abaixo: 58,0%</span></div><div class="track"><i style="width:42%"></i></div></div>
+      <h3>Grandes nomes</h3>
+      <div class="movers">
+        <div class="mv up"><b>MSFT</b><span class="up">+3,66%</span></div>
+        <div class="mv up"><b>AKAM</b><span class="up">+3,20%</span></div>
+        <div class="mv up"><b>COST</b><span class="up">+2,93%</span></div>
+        <div class="mv up"><b>AAPL</b><span class="up">+1,53%</span></div>
+        <div class="mv up"><b>GOOG</b><span class="up">+0,61%</span></div>
+        <div class="mv up"><b>NVDA</b><span class="up">+0,22%</span></div>
+        <div class="mv down"><b>META</b><span class="down">−3,33%</span></div>
+        <div class="mv down"><b>ORCL</b><span class="down">−1,75%</span></div>
+        <div class="mv down"><b>TSLA</b><span class="down">−1,54%</span></div>
+        <div class="mv down"><b>NKE</b><span class="down">−0,67%</span></div>
+        <div class="mv down"><b>CMCSA</b><span class="down">−0,99%</span></div>
+        <div class="mv up"><b>MMM</b><span class="up">+1,21%</span></div>
+      </div>
+    </div>
+  </div>
+  <!-- /EDITORIAL:AMPLITUDE -->
+</section>
+
+<section id="commod">
+  <div class="sec-head"><h2>Commodities, câmbio e juros</h2><span class="live">ao vivo</span></div>
+  <div class="panel"><div class="tv" style="height:520px"><div class="tradingview-widget-container" data-kind="market-overview" data-cfg='{"tabs": [{"title": "Energia", "symbols": [{"s": "TVC:UKOIL", "d": "Brent"}, {"s": "TVC:USOIL", "d": "WTI"}, {"s": "NYMEX:NG1!", "d": "Gás natural"}]}, {"title": "Metais", "symbols": [{"s": "TVC:GOLD", "d": "Ouro"}, {"s": "TVC:SILVER", "d": "Prata"}, {"s": "COMEX:HG1!", "d": "Cobre"}, {"s": "TVC:PLATINUM", "d": "Platina"}]}, {"title": "Agrícolas", "symbols": [{"s": "CBOT:ZS1!", "d": "Soja"}, {"s": "CBOT:ZC1!", "d": "Milho"}, {"s": "ICEUS:KC1!", "d": "Café"}, {"s": "ICEUS:SB1!", "d": "Açúcar"}]}, {"title": "Câmbio", "symbols": [{"s": "FX_IDC:USDBRL", "d": "Dólar/Real"}, {"s": "FX:EURUSD", "d": "EUR/USD"}, {"s": "FX:USDJPY", "d": "USD/JPY"}, {"s": "TVC:DXY", "d": "DXY"}]}, {"title": "Juros 10a", "symbols": [{"s": "TVC:US10Y", "d": "EUA 10a"}, {"s": "TVC:US02Y", "d": "EUA 2a"}, {"s": "TVC:DE10Y", "d": "Alemanha 10a"}, {"s": "TVC:GB10Y", "d": "Reino Unido 10a"}, {"s": "TVC:JP10Y", "d": "Japão 10a"}, {"s": "TVC:BR10Y", "d": "Brasil 10a"}]}], "width": "100%", "height": "100%", "showChart": true, "showSymbolLogo": true, "isTransparent": true, "locale": "br", "plotLineColorGrowing": "#13804f", "plotLineColorFalling": "#c23b3b", "belowLineFillColorGrowing": "rgba(19,128,79,0.12)", "belowLineFillColorFalling": "rgba(194,59,59,0.12)", "symbolActiveColor": "rgba(15,107,92,0.12)"}'><div class="tradingview-widget-container__widget"></div></div></div></div>
+  <!-- EDITORIAL:JUROS -->
+  <div class="grid2">
+    <div class="panel" style="overflow-x:auto"><h3>Títulos soberanos · 10 anos</h3>
+      <table>
+        <thead><tr><th>País</th><th>Taxa</th><th>Var. dia</th></tr></thead>
+        <tr><td>EUA 2a / 10a / 30a</td><td class="num">4,81% / 5,17% / 5,49%</td><td class="num flat">2a −3 bp</td></tr>
+        <tr><td>Reino Unido (Gilt)</td><td class="num">5,36%</td><td class="num up">−1,9 bp</td></tr>
+        <tr><td>França (OAT)</td><td class="num">4,73%</td><td class="num flat">+0,2 bp</td></tr>
+        <tr><td>Itália (BTP)</td><td class="num">4,50%</td><td class="num up">−5,4 bp</td></tr>
+        <tr><td>Espanha</td><td class="num">4,08%</td><td class="num flat">+0,4 bp</td></tr>
+        <tr><td>Alemanha (Bund)</td><td class="num">3,61%</td><td class="num flat">−0,1 bp</td></tr>
+        <tr><td>Japão (JGB)</td><td class="num">3,07%</td><td class="num up">−1,2 bp</td></tr>
+        <tr><td>Brasil DI jan/27 · jan/29 · jan/31</td><td class="num">13,55% · 13,83% · 13,93%</td><td class="num up">até −9 bp</td></tr>
+      </table>
+      <p class="foot">Verde = queda de taxa (alívio). Dados de fim de tarde (Europa e JGB) e fechamento (EUA, DI).</p>
+    </div>
+    <div class="panel" style="overflow-x:auto"><h3>Juros básicos</h3>
+      <table>
+        <thead><tr><th>Banco central</th><th>Taxa</th><th>Último movimento</th></tr></thead>
+        <tr><td>Fed (EUA)</td><td class="num">3,75–4,00%</td><td>alta de 25 bp em 16/set</td></tr>
+        <tr><td>BCE (depósito)</td><td class="num">2,50%</td><td>alta de 25 bp em 10/set</td></tr>
+        <tr><td>BoE (Reino Unido)</td><td class="num">3,75%</td><td>mantida em 17/set (6×3)</td></tr>
+        <tr><td>BoJ (Japão)</td><td class="num">1,25%</td><td>alta de 25 bp em set</td></tr>
+        <tr><td>SNB (Suíça)</td><td class="num">0,00%</td><td>mantida em 24/set</td></tr>
+        <tr><td>RBA (Austrália)</td><td class="num">4,35%</td><td>decide terça, 29/set</td></tr>
+        <tr><td>Copom (Selic)</td><td class="num">13,75%</td><td>corte de 25 bp em 16/set</td></tr>
+      </table>
+      <p class="foot">Mercado precifica ~70% de chance de nova alta do Fed em outubro.</p>
+    </div>
+  </div>
+  <!-- /EDITORIAL:JUROS -->
+</section>
+
+<!-- EDITORIAL:NOTICIAS -->
+<section id="noticias">
+  <div class="sec-head"><h2>Notícias que movem o dia</h2></div>
+  <div class="news">
+    <div class="item"><div class="tag">Geopolítica</div><div>
+      <h4>Irã propõe reabrir Ormuz em sete dias, com condições</h4>
+      <p>A proposta pede liberação de ao menos US$ 12 bi em ativos congelados, retomada das vendas de petróleo e fim do bloqueio naval, além de cessar-fogo regional. A questão nuclear segue sem acordo, e o tráfego no estreito continua baixo.</p>
+      <span class="impact">Petróleo · Petrobras · inflação global</span></div></div>
+    <div class="item"><div class="tag">EUA · Juros</div><div>
+      <h4>Treasuries na máxima desde 2007 e Fed com viés de alta</h4>
+      <p>O 10 anos terminou a semana em 5,17% e o 30 anos na máxima desde 2004. Schmid, do Fed, disse que a inflação não está resolvida e chamou a dívida americana de extrema. Michigan final veio em 48,1, com expectativa de inflação em alta.</p>
+      <span class="impact">Todos os ativos de risco · dólar</span></div></div>
+    <div class="item"><div class="tag">Brasil · Inflação</div><div>
+      <h4>IPCA-15 de setembro sobe 0,70%, acima do teto das projeções</h4>
+      <p>Em 12 meses, 4,47% (mediana esperada: 4,31%). O fim do bônus de Itaipu levou energia elétrica residencial a +7,42%. O mercado ainda espera corte de 25 bp da Selic em novembro, mas com menos convicção.</p>
+      <span class="impact">DI · bancos · varejo</span></div></div>
+    <div class="item"><div class="tag">Brasil · Política</div><div>
+      <h4>Datafolha mostra disputa apertada entre Lula e Flávio Bolsonaro</h4>
+      <p>Lula 40% × Flávio 36% no primeiro turno e 47% × 45% no segundo, dentro da margem. Parte do mercado lê vantagem da direita como sinal de ajuste fiscal mais duro em 2027, o que ajudou a curva longa na sexta.</p>
+      <span class="impact">Curva longa · câmbio · estatais</span></div></div>
+    <div class="item"><div class="tag">Comércio</div><div>
+      <h4>Trump e Xi encerram encontro em Washington</h4>
+      <p>Trump chamou a reunião de muito produtiva. Os dois lados estenderam por pouco tempo o acordo comercial e seguem discutindo coordenação em IA. Pequim também tenta ajudar a esfriar o conflito com o Irã.</p>
+      <span class="impact">Metais · China · exportadoras</span></div></div>
+    <div class="item"><div class="tag">Empresas</div><div>
+      <h4>Akamai fecha acordo de US$ 11,6 bi com a Anthropic; Microsoft lidera o Dow</h4>
+      <p>Akamai subiu 3,2% e Microsoft 3,7%. Meta devolveu 3,3% após rali com o agente de IA Muse. No Brasil, Azzas +13%, Ultrapar −5,8% e Vibra −5,0%; farmácias caíram com a entrada do Mercado Livre em remédios.</p>
+      <span class="impact">Tecnologia · consumo</span></div></div>
+  </div>
+</section>
+<!-- /EDITORIAL:NOTICIAS -->
+
+<section id="noticias-ao-vivo">
+  <div class="sec-head"><h2>Feed de notícias</h2><span class="live">ao vivo</span></div>
+  <div class="panel"><div class="tv" style="height:560px"><div class="tradingview-widget-container" data-kind="timeline" data-cfg='{"feedMode": "all_symbols", "isTransparent": true, "displayMode": "regular", "width": "100%", "height": "100%", "locale": "br"}'><div class="tradingview-widget-container__widget"></div></div></div></div>
+</section>
+
+<!-- EDITORIAL:CALENDARIO -->
+<section id="calendario">
+  <div class="sec-head"><h2>Calendário econômico · segunda, 28/09</h2><span class="note">Importância no padrão Investing (★ a ★★★) · <a href="https://br.investing.com/economic-calendar/" target="_blank" rel="noopener">calendário ao vivo</a></span></div>
+  <div class="panel cal">
+    <table>
+      <thead><tr><th>Hora</th><th>País</th><th>Evento</th><th>Importância</th><th>Por que importa</th></tr></thead>
+      <tbody>
+        <tr><td class="num">Dom 20:30</td><td><span class="flag">JP</span></td><td>Salários e emprego (jul, final)</td><td class="stars">★<span class="off">★★</span></td><td>Pressão salarial para a BoJ</td></tr>
+        <tr><td class="num">Madrugada</td><td><span class="flag">CN</span></td><td>Lucros industriais (ago)</td><td class="stars">★★<span class="off">★</span></td><td>Termômetro da demanda chinesa por metais</td></tr>
+        <tr><td class="num">Madrugada</td><td><span class="flag">JP</span></td><td>Ata da reunião da BoJ</td><td class="stars">★★<span class="off">★</span></td><td>Ritmo das próximas altas; iene</td></tr>
+        <tr class="key"><td class="num">08:25</td><td><span class="flag">BR</span></td><td><b>Boletim Focus</b></td><td class="stars">★★<span class="off">★</span></td><td>Primeira leitura após IPCA-15 forte: IPCA 2026 e Selic</td></tr>
+        <tr class="key"><td class="num">a definir</td><td><span class="flag">EU</span></td><td><b>Lagarde (BCE) discursa</b></td><td class="stars">★★★</td><td>BCE subiu juros em setembro; sinal para outubro</td></tr>
+        <tr><td class="num">a definir</td><td><span class="flag">EU</span></td><td>Elderson (BCE) discursa</td><td class="stars">★<span class="off">★★</span></td><td></td></tr>
+        <tr><td class="num">a definir</td><td><span class="flag">UK</span></td><td>Ramsden (BoE) discursa</td><td class="stars">★<span class="off">★★</span></td><td>BoE dividida 6×3</td></tr>
+        <tr class="key"><td class="num">a definir</td><td><span class="flag">US</span></td><td><b>Barkin (Fed) discursa</b></td><td class="stars">★★<span class="off">★</span></td><td>Tom sobre alta em outubro</td></tr>
+        <tr><td class="num">12:00</td><td><span class="flag">US</span></td><td>Inspeções de exportação (USDA)</td><td class="stars">★<span class="off">★★</span></td><td>Soja e milho</td></tr>
+        <tr><td class="num">15:00</td><td><span class="flag">BR</span></td><td>Balança comercial parcial de setembro</td><td class="stars">★<span class="off">★★</span></td><td>Fluxo cambial</td></tr>
+        <tr><td class="num">17:00</td><td><span class="flag">US</span></td><td>Condições das lavouras (USDA)</td><td class="stars">★<span class="off">★★</span></td><td>Grãos</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Resto da semana · os destaques</h3>
+  <div class="week">
+    <div class="day"><h5>Terça, 29</h5><ul>
+      <li class="k">Decisão do RBA (Austrália)</li>
+      <li class="k">JOLTS (ago) · EUA</li>
+      <li>Caged (set) · IGP-M (set) 08:00 · PNAD 09:00</li>
+      <li>Inflação Espanha · confiança zona do euro</li>
+      <li>Balanço Micron</li></ul></div>
+    <div class="day"><h5>Quarta, 30</h5><ul>
+      <li class="k">PCE (ago) e PIB final 2º tri · EUA</li>
+      <li class="k">PMI oficial da China (set)</li>
+      <li>ADP (set) · CPI Alemanha, França, Itália</li>
+      <li>Balanço Accenture</li></ul></div>
+    <div class="day"><h5>Quinta, 1º</h5><ul>
+      <li class="k">ISM Manufatura (set) · EUA</li>
+      <li>Pedidos de seguro-desemprego</li>
+      <li>Tankan (3º tri) · CPI Suíça</li></ul></div>
+    <div class="day"><h5>Sexta, 2</h5><ul>
+      <li class="k">Payroll e desemprego (set) · EUA</li>
+      <li class="k">Inflação zona do euro (set, prévia)</li>
+      <li>CPI Tóquio (set)</li></ul></div>
+  </div>
+</section>
+<!-- /EDITORIAL:CALENDARIO -->
+
+<section id="calendario-completo">
+  <div class="sec-head"><h2>Calendário completo</h2><span class="live">ao vivo</span></div>
+  <div class="panel"><div class="tv" style="height:560px"><div class="tradingview-widget-container" data-kind="events" data-cfg='{"width": "100%", "height": "100%", "isTransparent": true, "locale": "br", "importanceFilter": "0,1", "countryFilter": "br,us,eu,cn,jp,gb,de"}'><div class="tradingview-widget-container__widget"></div></div></div></div>
+</section>
+
+<!-- EDITORIAL:LAATUS -->
+<section id="laatus">
+  <div class="sec-head"><h2>Resumo Laatus</h2><span class="note">Live diária no YouTube, 08:35–09:59 (BRT)</span></div>
+  <div class="panel">
+    <div id="laatus-resumo">
+      <p class="foot">Status: aguardando a próxima live (segunda, 28/09). O resumo entra por volta das 10:05 dos dias úteis.</p>
+      <p>Aqui aparecem a leitura do dia do apresentador, os níveis citados para índice e dólar, as notícias comentadas e a agenda destacada na live.</p>
+    </div>
+    <p class="foot"><a href="https://www.youtube.com/results?search_query=laatus+panorama" target="_blank" rel="noopener">Lives do Laatus no YouTube</a></p>
+  </div>
+</section>
+<!-- /EDITORIAL:LAATUS -->
+
+<div class="sources">
+  <b>Fontes</b>
+  <span><a href="https://finviz.com/" target="_blank" rel="noopener">Finviz</a> (amplitude, setores, destaques) · <a href="https://br.investing.com/economic-calendar/" target="_blank" rel="noopener">Investing.com</a> · <a href="https://exame.com/invest/mercados/ibovespa-ibov-fechamento-25-09-2026/" target="_blank" rel="noopener">Exame</a> (Ibovespa, dólar, petróleo) · <a href="https://www.cnbc.com/2026/09/24/stock-market-today-live-updates.html" target="_blank" rel="noopener">CNBC</a> · <a href="https://www.armstrongeconomics.com/market-talk/market-talk-september-25-2026/" target="_blank" rel="noopener">Armstrong Economics</a> (Europa, metais, títulos) · <a href="https://www.stl.news/overseas-markets-mixed-sept-25/" target="_blank" rel="noopener">STL.News</a> (Ásia) · <a href="https://www.advisorperspectives.com/dshort/updates/2026/09/25/treasury-yields-snapshot-september-25-2026" target="_blank" rel="noopener">Advisor Perspectives</a> (Treasuries) · <a href="https://www.opovo.com.br/noticias/economia/2026/09/25/taxas-de-juros-caem-com-alivio-nas-cotacoes-do-petroleo-e-expectativas-para-eleicao.html" target="_blank" rel="noopener">Broadcast/O Povo</a> (DI, IPCA-15) · <a href="https://www.newsquawk.com/headlines/newsquawk-weekly-economic-release-28th-september---2nd-october-2026-" target="_blank" rel="noopener">Newsquawk</a> e <a href="https://safras.com.br/de-28-de-setembro-a-2-de-outubro-veja-a-agenda-dos-principais-eventos-do-agronegocio" target="_blank" rel="noopener">Safras</a> (agenda)</span>
+  <span>Conteúdo informativo, não é recomendação de investimento.</span>
+
+
+
+  <span class="credit">Cotações, mapa, feed e calendário ao vivo: <a href="https://br.tradingview.com/" target="_blank" rel="noopener">widgets do TradingView</a>. Alguns ativos, como a B3, têm atraso de cerca de 15 minutos.</span>
+</div>
+
+</div>
+<script>
+(function(){
+  var dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+  document.querySelectorAll(".tradingview-widget-container").forEach(function(box){
+    var cfg=JSON.parse(box.getAttribute("data-cfg"));
+    cfg.colorTheme=dark?"dark":"light";
+    var sc=document.createElement("script");
+    sc.src="https://s3.tradingview.com/external-embedding/embed-widget-"+box.getAttribute("data-kind")+".js";
+    sc.async=true;sc.type="text/javascript";sc.text=JSON.stringify(cfg);
+    box.appendChild(sc);
+  });
+})();
+</script>
+</body>
+</html>
