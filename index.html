@@ -157,6 +157,22 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
 .play:hover{filter:brightness(1.08)}
 .play[disabled]{opacity:.55;cursor:default}
 #laatus-resumo{display:flex;flex-direction:column;gap:10px}
+
+.stamp{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.btn-resumo{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--body);color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:999px;padding:7px 14px;cursor:pointer}
+.btn-resumo:hover{background:var(--accent);color:var(--surface)}
+.btn-resumo svg{width:15px;height:15px;flex:none}
+@media (max-width:700px){.stamp{align-items:flex-start}}
+.resumo{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+.resumo-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.resumo-head h2{font-size:20px}
+.resumo-close{font:600 13px var(--body);color:var(--muted);background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+.resumo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 28px}
+@media (max-width:760px){.resumo-grid{grid-template-columns:1fr}}
+.resumo-grid h3{margin-bottom:4px}
+.resumo-grid p,.resumo-grid li{font-size:14.5px;max-width:70ch}
+.resumo-grid ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.resumo-grid .full{grid-column:1/-1}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .tv{width:100%;max-width:100%;overflow:hidden}
@@ -179,8 +195,44 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
     <div class="edition">Panorama Matinal · segunda-feira, 28 set 2026</div>
     <h1>Petróleo cede, Treasuries seguem no topo desde 2007</h1>
   </div>
-  <div class="stamp">Fechamentos de <b>sexta, 25/09</b><br>Horários em Brasília (BRT)<br><span id="updated">Atualizado: sáb 26/09, 01:00</span></div>
+  <div class="stamp">
+    <button type="button" class="btn-resumo" id="btnResumo" aria-expanded="false" aria-controls="resumoDia"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2h10v12H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" stroke="currentColor" stroke-width="1.5"/></svg>Resumo do dia</button>
+    <div>Fechamentos de <b>sexta, 25/09</b><br>Horários em Brasília (BRT)<br><span id="updated">Atualizado: sáb 26/09, 01:00</span></div>
+  </div>
 </header>
+
+<!-- EDITORIAL:RESUMO -->
+<section class="resumo" id="resumoDia" hidden aria-labelledby="resumoTitulo">
+  <div class="resumo-head"><h2 id="resumoTitulo">Resumo do dia · segunda, 28/09</h2><button type="button" class="resumo-close" id="fecharResumo">Fechar</button></div>
+  <div class="resumo-grid">
+    <div><h3>Ásia</h3><p>Fechou mista. O Nikkei subiu 1,30% (66.364), quinta alta seguida, puxado por bancos e tecnologia; o Topix ganhou 1,31%. Hang Seng caiu 1,01% e o ASX 200, 0,43%. China, Coreia e Taiwan não abriram por feriado.</p></div>
+    <div><h3>Europa</h3><p>Fechou mista na sexta: DAX +0,56%, FTSE 100 +0,14% e CAC 40 estável (−0,04%). O STOXX 600 fez a primeira alta semanal em quatro semanas, com bancos na frente e energia pressionada pela queda do petróleo.</p></div>
+    <div class="full"><h3>Principais variações</h3><ul>
+      <li><b>Nova York:</b> Dow +0,93%, S&amp;P 500 +0,51% (7.743) e Nasdaq +0,48%, com alta nas três na semana.</li>
+      <li><b>Brasil:</b> Ibovespa −0,27% (183.477), terceira queda seguida; dólar −0,23%, a R$ 5,181.</li>
+      <li><b>Petróleo:</b> Brent −2,14% (US$ 104,32) e WTI −2,33% (US$ 92,41), com a proposta do Irã sobre Ormuz.</li>
+      <li><b>Juros:</b> Treasury de 10 anos em 5,17%, perto da máxima desde 2007; DI jan/31 caiu para 13,93%.</li>
+      <li><b>Ações:</b> Microsoft +3,7% e Akamai +3,2% lá fora, Meta −3,3%; aqui, Azzas +13%, Ultrapar −5,8% e Petrobras PN −2,6%.</li>
+    </ul></div>
+    <div><h3>Notícias nacionais</h3><ul>
+      <li>IPCA-15 de setembro subiu 0,70%, acima de todas as projeções; 4,47% em 12 meses, com a energia puxando.</li>
+      <li>Datafolha mostra Lula e Flávio Bolsonaro empatados no segundo turno (47% × 45%).</li>
+      <li>Farmácias caíram na bolsa com a entrada do Mercado Livre na venda de remédios com receita.</li>
+    </ul></div>
+    <div><h3>Notícias internacionais</h3><ul>
+      <li>Irã propõe reabrir o Estreito de Ormuz em sete dias, em troca de ativos e fim do bloqueio.</li>
+      <li>Fed segue duro: mercado vê cerca de 70% de chance de nova alta de juros em outubro.</li>
+      <li>Trump e Xi encerram encontro com extensão curta do acordo comercial.</li>
+    </ul></div>
+    <div class="full"><h3>Calendário · só ★★★</h3><ul>
+      <li><b>Hoje:</b> discurso de Christine Lagarde, presidente do BCE (horário a confirmar).</li>
+      <li><b>Na semana:</b> PCE dos EUA (qua), ISM de manufatura (qui) e Payroll (sex).</li>
+    </ul></div>
+  </div>
+</section>
+<!-- /EDITORIAL:RESUMO -->
+
+
 
 
 <div class="tv" style="height:46px"><div class="tradingview-widget-container" data-kind="ticker-tape" data-cfg='{"symbols": [{"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"}, {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"}, {"proName": "FOREXCOM:DJI", "title": "Dow"}, {"proName": "BMFBOVESPA:IBOV", "title": "Ibovespa"}, {"proName": "FX_IDC:USDBRL", "title": "Dólar/Real"}, {"proName": "TVC:DXY", "title": "DXY"}, {"proName": "TVC:UKOIL", "title": "Brent"}, {"proName": "TVC:USOIL", "title": "WTI"}, {"proName": "TVC:GOLD", "title": "Ouro"}, {"proName": "TVC:US10Y", "title": "Treasury 10a"}, {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"}], "showSymbolLogo": true, "isTransparent": true, "displayMode": "adaptive", "locale": "br"}'><div class="tradingview-widget-container__widget"></div></div></div>
@@ -379,6 +431,14 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
 </div>
 
 </div>
+<script>
+(function(){
+  var b=document.getElementById("btnResumo"),p=document.getElementById("resumoDia"),f=document.getElementById("fecharResumo");
+  function set(open){p.hidden=!open;b.setAttribute("aria-expanded",open?"true":"false");if(open)p.scrollIntoView({behavior:"smooth",block:"start"});}
+  b.addEventListener("click",function(){set(p.hidden);});
+  f.addEventListener("click",function(){set(false);b.focus();});
+})();
+</script>
 <script>
 (function(){
   var dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
