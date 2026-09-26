@@ -180,6 +180,13 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
 .btn-ouvir[aria-pressed="true"]{background:var(--surface);color:var(--accent)}
 .btn-ouvir[disabled]{opacity:.5;cursor:default}
 .resumo-grid .lendo{background:var(--accent-soft);border-radius:4px;box-shadow:0 0 0 4px var(--accent-soft)}
+
+.resumo-actions{flex-wrap:wrap;justify-content:flex-end}
+.voz-sel{font:500 13px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;max-width:210px}
+.vel{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.vel button{font:500 12.5px var(--mono);color:var(--muted);background:var(--surface);border:0;border-right:1px solid var(--line);padding:4px 8px;cursor:pointer}
+.vel button:last-child{border-right:0}
+.vel button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .tv{width:100%;max-width:100%;overflow:hidden}
@@ -210,7 +217,7 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
 
 <!-- EDITORIAL:RESUMO -->
 <section class="resumo" id="resumoDia" hidden aria-labelledby="resumoTitulo">
-  <div class="resumo-head"><h2 id="resumoTitulo">Resumo do dia · segunda, 28/09</h2><div class="resumo-actions"><button type="button" class="btn-ouvir" id="ouvirResumo" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.8a6 6 0 0 1 0 8.4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span>Ouvir</span></button><button type="button" class="resumo-close" id="fecharResumo">Fechar</button></div></div>
+  <div class="resumo-head"><h2 id="resumoTitulo">Resumo do dia · segunda, 28/09</h2><div class="resumo-actions"><select id="vozResumo" class="voz-sel" aria-label="Voz da leitura"><option value="">Voz automática</option></select><div class="vel" role="group" aria-label="Velocidade da leitura"><button type="button" data-rate="1" aria-pressed="true">1x</button><button type="button" data-rate="1.25" aria-pressed="false">1,25x</button><button type="button" data-rate="1.5" aria-pressed="false">1,5x</button><button type="button" data-rate="2" aria-pressed="false">2x</button></div><button type="button" class="btn-ouvir" id="ouvirResumo" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.8a6 6 0 0 1 0 8.4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span>Ouvir</span></button><button type="button" class="resumo-close" id="fecharResumo">Fechar</button></div></div>
   <div class="resumo-grid">
     <div><h3>Ásia</h3><p>Fechou mista. O Nikkei subiu 1,30% (66.364), quinta alta seguida, puxado por bancos e tecnologia; o Topix ganhou 1,31%. Hang Seng caiu 1,01% e o ASX 200, 0,43%. China, Coreia e Taiwan não abriram por feriado.</p></div>
     <div><h3>Europa</h3><p>Fechou mista na sexta: DAX +0,56%, FTSE 100 +0,14% e CAC 40 estável (−0,04%). O STOXX 600 fez a primeira alta semanal em quatro semanas, com bancos na frente e energia pressionada pela queda do petróleo.</p></div>
@@ -453,7 +460,24 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
   var label=btn.querySelector("span"),synth=window.speechSynthesis;
   if(!synth||typeof SpeechSynthesisUtterance==="undefined"){btn.disabled=true;label.textContent="Áudio indisponível";btn.title="Este navegador não tem leitura em voz alta.";return;}
   var fila=[],ativo=false,atual=null;
-  function voz(){var vs=synth.getVoices();return vs.filter(function(v){return /^pt(-|_)BR/i.test(v.lang)})[0]||vs.filter(function(v){return /^pt/i.test(v.lang)})[0]||null;}
+  var sel=document.getElementById("vozResumo"),taxa=1;
+  function ler(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function gravar(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function nota(v){var n=v.name,p=0;if(/natural|neural|online/i.test(n))p+=50;if(/francisca|antonio|thalita|brenda|donato/i.test(n))p+=20;if(/google/i.test(n))p+=15;if(/enhanced|aprimorad|premium|luciana|felipe/i.test(n))p+=12;if(/^pt(-|_)BR/i.test(v.lang))p+=5;return p;}
+  function vozesPt(){return synth.getVoices().filter(function(v){return /^pt/i.test(v.lang)}).sort(function(a,b){return nota(b)-nota(a)});}
+  function preencher(){
+    var vs=vozesPt();if(!vs.length)return;
+    var salva=ler("panorama-voz");sel.innerHTML="";
+    vs.forEach(function(v,i){var o=document.createElement("option");o.value=v.name;o.textContent=v.name.replace(/Microsoft |Google /,"").replace(/ - .*$/,"").replace(/\(Natural\)/," (natural)")+(i===0?" ★":"");sel.appendChild(o);});
+    sel.value=(salva&&vs.some(function(v){return v.name===salva}))?salva:vs[0].name;
+  }
+  function voz(){var vs=vozesPt();return vs.filter(function(v){return v.name===sel.value})[0]||vs[0]||null;}
+  sel.addEventListener("change",function(){gravar("panorama-voz",sel.value);});
+  var velBtns=document.querySelectorAll(".vel button");
+  function setVel(r){taxa=r;velBtns.forEach(function(b){b.setAttribute("aria-pressed",String(parseFloat(b.dataset.rate)===r))});gravar("panorama-vel",String(r));}
+  velBtns.forEach(function(b){b.addEventListener("click",function(){setVel(parseFloat(b.dataset.rate));});});
+  var vs0=parseFloat(ler("panorama-vel"));if([1,1.25,1.5,2].indexOf(vs0)>=0)setVel(vs0);
+  preencher();if("onvoiceschanged" in synth)synth.addEventListener("voiceschanged",preencher);
   function limpar(t){return t.replace(/\s+/g," ").replace(/×/g," a ").replace(/−/g,"menos ").replace(/\+(\d)/g,"mais $1").replace(/★★★/g,"três estrelas").replace(/★/g,"").replace(/·/g,",").replace(/US\$ ?/g,"").replace(/R\$ ?/g,"").trim();}
   function montar(){
     var itens=[],t=document.getElementById("resumoTitulo");
@@ -471,7 +495,7 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
   function proximo(){
     if(!ativo)return;
     var it=fila.shift();if(!it){parar();return;}
-    var u=new SpeechSynthesisUtterance(it.txt);u.lang="pt-BR";u.rate=1.02;var v=voz();if(v)u.voice=v;
+    var u=new SpeechSynthesisUtterance(it.txt);u.lang="pt-BR";u.rate=taxa;var v=voz();if(v)u.voice=v;
     u.onstart=function(){marcar(it.el);};
     u.onend=function(){proximo();};
     u.onerror=function(){parar();};
@@ -483,7 +507,6 @@ td .sub{display:block;font-size:11px;color:var(--muted);font-family:var(--body)}
     synth.cancel();fila=montar();ativo=true;btn.setAttribute("aria-pressed","true");label.textContent="Parar";proximo();
   });
   document.getElementById("fecharResumo").addEventListener("click",parar);
-  if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=function(){};
 })();
 </script>
 <script>
